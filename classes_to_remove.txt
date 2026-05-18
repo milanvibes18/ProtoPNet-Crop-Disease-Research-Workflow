@@ -1,0 +1,25 @@
+# Classes to Remove - All Tiers
+# Total: 17 classes
+
+# Tier 1 - Remove Immediately (Train < 10)
+coffee black rot
+peach rust
+broccoli ring spot
+coffee brown eye spot
+peach anthracnose
+
+# Tier 2 - Strongly Consider Removing (Train 10-15)
+carrot cercospora leaf blight
+raspberry leaf spot
+plum bacterial spot
+tobacco frogeye leaf spot
+celery anthracnose
+ginger leaf spot
+
+# Tier 3 - Borderline (Train 16-20)
+bell pepper frogeye leaf spot
+bell pepper powdery mildew
+eggplant phytophthora blight
+blueberry botrytis blight
+broccoli downy mildew
+cauliflower bacterial soft rot

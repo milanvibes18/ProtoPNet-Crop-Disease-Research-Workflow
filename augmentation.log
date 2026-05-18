@@ -1,0 +1,113 @@
+23:50:16  INFO      ========================================================================
+23:50:16  INFO        ProtoPNet Augmentation Pipeline  (v2 — Target-Count Mode)
+23:50:16  INFO      ========================================================================
+23:50:16  INFO      Train dir   : Dataset\plantwild\train
+23:50:16  INFO      Mode        : TARGET-COUNT — 700 images per class
+23:50:16  INFO      Strong aug  : activates when gap/originals > 5×
+23:50:16  INFO      Scanning training directory: Dataset\plantwild\train
+23:50:16  INFO      Found 6402 original + 25134 existing augmented images across 98 classes.
+23:50:16  INFO      Pipelines built:
+23:50:16  INFO        Standard: rotation=±30°, crop=0.7–1.0
+23:50:16  INFO        Strong  : rotation=±45°, crop=0.5–1.0, erasing=p0.3
+23:50:16  INFO        Strong pipeline activates when gap/originals > 5×
+23:50:16  INFO      Starting target-count augmentation...
+23:50:16  INFO        [apple black rot                              ] orig=  47  existing_aug=  329  need=  324  ratio=6.9×  pipeline=STRONG
+23:50:19  INFO        [apple mosaic virus                           ] orig=  58  existing_aug=  174  need=  468  ratio=8.1×  pipeline=STRONG
+23:50:25  INFO        [apple rust                                   ] orig=  81  existing_aug=  243  need=  376  ratio=4.6×  pipeline=standard
+23:50:28  INFO        [apple scab                                   ] orig= 145  existing_aug=  435  need=  120  ratio=0.8×  pipeline=standard
+23:50:29  INFO        [banana anthracnose                           ] orig=  43  existing_aug=  301  need=  356  ratio=8.3×  pipeline=STRONG
+23:50:33  INFO        [banana black leaf streak                     ] orig= 106  existing_aug=  318  need=  276  ratio=2.6×  pipeline=standard
+23:50:36  INFO        [banana bunchy top                            ] orig=  97  existing_aug=  291  need=  312  ratio=3.2×  pipeline=standard
+23:50:39  INFO        [banana cigar end rot                         ] orig=  35  existing_aug=  245  need=  420  ratio=12.0×  pipeline=STRONG
+23:50:44  INFO        [banana cordana leaf spot                     ] orig=  28  existing_aug=  196  need=  476  ratio=17.0×  pipeline=STRONG
+23:50:50  INFO        [banana panama disease                        ] orig=  44  existing_aug=  308  need=  348  ratio=7.9×  pipeline=STRONG
+23:50:54  INFO        [basil downy mildew                           ] orig=  31  existing_aug=  217  need=  452  ratio=14.6×  pipeline=STRONG
+23:50:59  INFO        [bean halo blight                             ] orig=  35  existing_aug=  245  need=  420  ratio=12.0×  pipeline=STRONG
+23:51:04  INFO        [bean mosaic virus                            ] orig=  34  existing_aug=  238  need=  428  ratio=12.6×  pipeline=STRONG
+23:51:08  INFO        [bean rust                                    ] orig=  72  existing_aug=  216  need=  412  ratio=5.7×  pipeline=STRONG
+23:51:13  INFO        [bell pepper bacterial spot                   ] orig=  36  existing_aug=  252  need=  412  ratio=11.4×  pipeline=STRONG
+23:51:18  INFO        [bell pepper blossom end rot                  ] orig=  51  existing_aug=  153  need=  496  ratio=9.7×  pipeline=STRONG
+23:51:23  INFO        [blueberry anthracnose                        ] orig=  24  existing_aug=  168  need=  508  ratio=21.2×  pipeline=STRONG
+23:51:29  INFO        [blueberry mummy berry                        ] orig=  20  existing_aug=  140  need=  540  ratio=27.0×  pipeline=STRONG
+23:51:36  INFO        [blueberry rust                               ] orig=  22  existing_aug=  154  need=  524  ratio=23.8×  pipeline=STRONG
+23:51:42  INFO        [blueberry scorch                             ] orig=  24  existing_aug=  168  need=  508  ratio=21.2×  pipeline=STRONG
+23:51:48  INFO        [broccoli alternaria leaf spot                ] orig=  37  existing_aug=  259  need=  404  ratio=10.9×  pipeline=STRONG
+23:51:52  INFO        [cabbage alternaria leaf spot                 ] orig=  38  existing_aug=  266  need=  396  ratio=10.4×  pipeline=STRONG
+23:51:57  INFO        [cabbage black rot                            ] orig=  76  existing_aug=  228  need=  396  ratio=5.2×  pipeline=STRONG
+23:52:02  INFO        [cabbage downy mildew                         ] orig=  53  existing_aug=  159  need=  488  ratio=9.2×  pipeline=STRONG
+23:52:08  INFO        [carrot alternaria leaf blight                ] orig=  41  existing_aug=  287  need=  372  ratio=9.1×  pipeline=STRONG
+23:52:12  INFO        [carrot cavity spot                           ] orig=  36  existing_aug=  252  need=  412  ratio=11.4×  pipeline=STRONG
+23:52:17  INFO        [cauliflower alternaria leaf spot             ] orig=  21  existing_aug=  147  need=  532  ratio=25.3×  pipeline=STRONG
+23:52:23  INFO        [celery early blight                          ] orig=  20  existing_aug=  140  need=  540  ratio=27.0×  pipeline=STRONG
+23:52:29  INFO        [cherry leaf spot                             ] orig=  62  existing_aug=  186  need=  452  ratio=7.3×  pipeline=STRONG
+23:52:34  INFO        [cherry powdery mildew                        ] orig=  20  existing_aug=  140  need=  540  ratio=27.0×  pipeline=STRONG
+23:52:41  INFO        [citrus canker] Deleted 176 excess augmented file(s).
+23:52:41  INFO        [citrus greening disease                      ] orig=  71  existing_aug=  213  need=  416  ratio=5.9×  pipeline=STRONG
+23:52:46  INFO        [coffee berry blotch                          ] orig=  70  existing_aug=  210  need=  420  ratio=6.0×  pipeline=STRONG
+23:52:51  INFO        [coffee leaf rust                             ] orig=  80  existing_aug=  240  need=  380  ratio=4.8×  pipeline=standard
+23:52:54  INFO        [corn gray leaf spot                          ] orig=  65  existing_aug=  195  need=  440  ratio=6.8×  pipeline=STRONG
+23:52:59  INFO        [corn northern leaf blight                    ] orig=  80  existing_aug=  240  need=  380  ratio=4.8×  pipeline=standard
+23:53:03  INFO        [corn rust                                    ] orig= 106  existing_aug=  318  need=  276  ratio=2.6×  pipeline=standard
+23:53:05  INFO        [corn smut                                    ] orig= 127  existing_aug=  381  need=  192  ratio=1.5×  pipeline=standard
+23:53:07  INFO        [cucumber angular leaf spot                   ] orig= 118  existing_aug=  354  need=  228  ratio=1.9×  pipeline=standard
+23:53:10  INFO        [cucumber bacterial wilt                      ] orig=  75  existing_aug=  225  need=  400  ratio=5.3×  pipeline=STRONG
+23:53:14  INFO        [cucumber powdery mildew                      ] orig= 125  existing_aug=  375  need=  200  ratio=1.6×  pipeline=standard
+23:53:16  INFO        [eggplant cercospora leaf spot                ] orig=  39  existing_aug=  273  need=  388  ratio=9.9×  pipeline=STRONG
+23:53:21  INFO        [eggplant phomopsis fruit rot                 ] orig=  29  existing_aug=  203  need=  468  ratio=16.1×  pipeline=STRONG
+23:53:27  INFO        [garlic leaf blight                           ] orig=  56  existing_aug=  168  need=  476  ratio=8.5×  pipeline=STRONG
+23:53:32  INFO        [garlic rust                                  ] orig=  48  existing_aug=  336  need=  316  ratio=6.6×  pipeline=STRONG
+23:53:36  INFO        [ginger sheath blight                         ] orig=  42  existing_aug=  294  need=  364  ratio=8.7×  pipeline=STRONG
+23:53:41  INFO        [grape black rot                              ] orig=  74  existing_aug=  222  need=  404  ratio=5.5×  pipeline=STRONG
+23:53:46  INFO        [grape downy mildew                           ] orig= 173  existing_aug=  519  need=    8  ratio=0.0×  pipeline=standard
+23:53:46  INFO        [grape leaf spot                              ] orig=  55  existing_aug=  165  need=  480  ratio=8.7×  pipeline=STRONG
+23:53:52  INFO        [grapevine leafroll disease                   ] orig=  44  existing_aug=  308  need=  348  ratio=7.9×  pipeline=STRONG
+23:53:57  INFO        [lettuce downy mildew                         ] orig=  48  existing_aug=  336  need=  316  ratio=6.6×  pipeline=STRONG
+23:54:01  INFO        [lettuce mosaic virus                         ] orig=  24  existing_aug=  168  need=  508  ratio=21.2×  pipeline=STRONG
+23:54:07  INFO        [maple tar spot                               ] orig=  71  existing_aug=  213  need=  416  ratio=5.9×  pipeline=STRONG
+23:54:12  INFO        [peach brown rot                              ] orig= 105  existing_aug=  315  need=  280  ratio=2.7×  pipeline=standard
+23:54:15  INFO        [peach leaf curl                              ] orig= 106  existing_aug=  318  need=  276  ratio=2.6×  pipeline=standard
+23:54:18  INFO        [peach scab                                   ] orig=  37  existing_aug=  259  need=  404  ratio=10.9×  pipeline=STRONG
+23:54:23  INFO        [plum brown rot                               ] orig=  48  existing_aug=  336  need=  316  ratio=6.6×  pipeline=STRONG
+23:54:27  INFO        [plum pocket disease                          ] orig=  34  existing_aug=  238  need=  428  ratio=12.6×  pipeline=STRONG
+23:54:32  INFO        [plum pox virus                               ] orig=  22  existing_aug=  154  need=  524  ratio=23.8×  pipeline=STRONG
+23:54:39  INFO        [plum rust                                    ] orig=  22  existing_aug=  154  need=  524  ratio=23.8×  pipeline=STRONG
+23:54:45  INFO        [potato early blight                          ] orig=  83  existing_aug=  249  need=  368  ratio=4.4×  pipeline=standard
+23:54:49  INFO        [potato late blight                           ] orig=  64  existing_aug=  192  need=  444  ratio=6.9×  pipeline=STRONG
+23:54:54  INFO        [raspberry fire blight                        ] orig=  20  existing_aug=  140  need=  540  ratio=27.0×  pipeline=STRONG
+23:55:00  INFO        [raspberry gray mold                          ] orig=  24  existing_aug=  168  need=  508  ratio=21.2×  pipeline=STRONG
+23:55:07  INFO        [raspberry yellow rust                        ] orig=  21  existing_aug=  147  need=  532  ratio=25.3×  pipeline=STRONG
+23:55:13  INFO        [rice blast                                   ] orig=  46  existing_aug=  322  need=  332  ratio=7.2×  pipeline=STRONG
+23:55:17  INFO        [rice sheath blight                           ] orig=  41  existing_aug=  287  need=  372  ratio=9.1×  pipeline=STRONG
+23:55:21  INFO        [soybean bacterial blight                     ] orig=  58  existing_aug=  174  need=  468  ratio=8.1×  pipeline=STRONG
+23:55:27  INFO        [soybean brown spot                           ] orig=  37  existing_aug=  259  need=  404  ratio=10.9×  pipeline=STRONG
+23:55:32  INFO        [soybean downy mildew                         ] orig=  91  existing_aug=  273  need=  336  ratio=3.7×  pipeline=standard
+23:55:35  INFO        [soybean frog eye leaf spot                   ] orig= 135  existing_aug=  405  need=  160  ratio=1.2×  pipeline=standard
+23:55:37  INFO        [soybean mosaic                               ] orig=  73  existing_aug=  219  need=  408  ratio=5.6×  pipeline=STRONG
+23:55:42  INFO        [soybean rust                                 ] orig=  71  existing_aug=  213  need=  416  ratio=5.9×  pipeline=STRONG
+23:55:48  INFO        [squash powdery mildew                        ] orig= 115  existing_aug=  345  need=  240  ratio=2.1×  pipeline=standard
+23:55:52  INFO        [strawberry anthracnose                       ] orig=  34  existing_aug=  238  need=  428  ratio=12.6×  pipeline=STRONG
+23:55:58  INFO        [strawberry leaf scorch                       ] orig=  27  existing_aug=  189  need=  484  ratio=17.9×  pipeline=STRONG
+23:56:06  INFO        [tobacco blue mold                            ] orig=  32  existing_aug=  224  need=  444  ratio=13.9×  pipeline=STRONG
+23:56:12  INFO        [tobacco brown spot                           ] orig=  36  existing_aug=  252  need=  412  ratio=11.4×  pipeline=STRONG
+23:56:17  INFO        [tobacco mosaic virus                         ] orig=  25  existing_aug=  175  need=  500  ratio=20.0×  pipeline=STRONG
+23:56:23  INFO        [tomato bacterial leaf spot                   ] orig=  59  existing_aug=  177  need=  464  ratio=7.9×  pipeline=STRONG
+23:56:28  INFO        [tomato early blight                          ] orig= 108  existing_aug=  324  need=  268  ratio=2.5×  pipeline=standard
+23:56:31  INFO        [tomato late blight                           ] orig=  94  existing_aug=  282  need=  324  ratio=3.4×  pipeline=standard
+23:56:35  INFO        [tomato leaf mold                             ] orig=  90  existing_aug=  270  need=  340  ratio=3.8×  pipeline=standard
+23:56:38  INFO        [tomato mosaic virus                          ] orig=  39  existing_aug=  273  need=  388  ratio=9.9×  pipeline=STRONG
+23:56:42  INFO        [tomato septoria leaf spot                    ] orig=  69  existing_aug=  207  need=  424  ratio=6.1×  pipeline=STRONG
+23:56:47  INFO        [tomato yellow leaf curl virus                ] orig=  59  existing_aug=  177  need=  464  ratio=7.9×  pipeline=STRONG
+23:56:53  INFO        [wheat bacterial leaf streak (black chaff)    ] orig=  60  existing_aug=  180  need=  460  ratio=7.7×  pipeline=STRONG
+23:57:00  INFO        [wheat head scab                              ] orig= 165  existing_aug=  495  need=   40  ratio=0.2×  pipeline=standard
+23:57:00  INFO        [wheat leaf rust                              ] orig=  67  existing_aug=  201  need=  432  ratio=6.4×  pipeline=STRONG
+23:57:06  INFO        [wheat loose smut                             ] orig= 122  existing_aug=  366  need=  212  ratio=1.7×  pipeline=standard
+23:57:09  INFO        [wheat powdery mildew                         ] orig= 157  existing_aug=  471  need=   72  ratio=0.5×  pipeline=standard
+23:57:09  INFO        [wheat septoria blotch                        ] orig= 103  existing_aug=  309  need=  288  ratio=2.8×  pipeline=standard
+23:57:12  INFO        [wheat stem rust                              ] orig=  69  existing_aug=  207  need=  424  ratio=6.1×  pipeline=STRONG
+23:57:17  INFO        [wheat stripe rust                            ] orig= 171  existing_aug=  513  need=   16  ratio=0.1×  pipeline=standard
+23:57:18  INFO        [zucchini bacterial wilt                      ] orig=  55  existing_aug=  165  need=  480  ratio=8.7×  pipeline=STRONG
+23:57:24  INFO        [zucchini downy mildew                        ] orig=  27  existing_aug=  189  need=  484  ratio=17.9×  pipeline=STRONG
+23:57:30  INFO        [zucchini powdery mildew                      ] orig= 145  existing_aug=  435  need=  120  ratio=0.8×  pipeline=standard
+23:57:31  INFO        [zucchini yellow mosaic virus                 ] orig=  60  existing_aug=  180  need=  460  ratio=7.7×  pipeline=STRONG
+23:57:37  INFO      Summary written to: Dataset\plantwild\augmentation_summary.txt
+23:57:37  INFO      Augmentation complete.

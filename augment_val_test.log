@@ -1,0 +1,22 @@
+00:09:13  INFO      =================================================================
+00:09:13  INFO        Val / Test Balancing Script  (mild augmentation)
+00:09:13  INFO      =================================================================
+00:09:13  INFO      Mild pipeline: crop=0.85–1.0, flip=p0.5, rotation=±10°, jitter=brightness0.1/contrast0.1
+00:09:13  INFO      
+00:09:13  INFO      ────────────────────────────────────────────────────────────
+00:09:13  INFO        Processing split: VAL  (Dataset\plantwild\val)
+00:09:13  INFO      ────────────────────────────────────────────────────────────
+00:09:13  INFO        98 classes found.
+00:09:13  INFO        Largest class: 'citrus canker' with 47 images  ← this is the target.
+00:09:13  INFO        97 class(es) need topping up.
+00:09:50  INFO      Summary written to: Dataset\plantwild\augmentation_summary_val.txt
+00:09:50  INFO      
+00:09:50  INFO      ────────────────────────────────────────────────────────────
+00:09:50  INFO        Processing split: TEST  (Dataset\plantwild\test)
+00:09:50  INFO      ────────────────────────────────────────────────────────────
+00:09:50  INFO        98 classes found.
+00:09:50  INFO        Largest class: 'citrus canker' with 47 images  ← this is the target.
+00:09:50  INFO        97 class(es) need topping up.
+00:10:27  INFO      Summary written to: Dataset\plantwild\augmentation_summary_test.txt
+00:10:27  INFO      
+00:10:27  INFO      Done.

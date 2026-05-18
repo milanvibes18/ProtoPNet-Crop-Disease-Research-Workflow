@@ -1,0 +1,27 @@
+20:18:46  INFO      ============================================================
+20:18:46  INFO        ProtoPNet Preprocessing Pipeline
+20:18:46  INFO      ============================================================
+20:18:46  INFO      Scanning dataset at: Dataset\plantwild_v2\plantwild_v2
+20:18:46  INFO      Found 11488 images across 115 classes.
+20:18:46  INFO      Checking for duplicates via MD5 hash...
+20:18:49  INFO      Duplicates removed: 402
+20:18:49  INFO      Filtering blurry images (sharpness < 100.0) and tiny files (< 1 KB)...
+20:20:23  INFO      Blurry images removed: 1648 | Tiny files removed: 0
+20:20:23  INFO      Class distribution after cleaning:
+20:20:23  INFO        tobacco frogeye leaf spot                        16  
+20:20:23  INFO        plum bacterial spot                              15  
+20:20:23  INFO        carrot cercospora leaf blight                    14  
+20:20:23  INFO        raspberry leaf spot                              14  
+20:20:23  INFO        peach anthracnose                                12  
+20:20:23  INFO        coffee brown eye spot                            10  
+20:20:23  INFO        broccoli ring spot                                8  
+20:20:23  INFO        peach rust                                        7  
+20:20:23  INFO        coffee black rot                                  6  
+20:20:23  INFO      Largest: 313  |  Smallest: 6  |  Ratio: 52.2x
+20:20:23  WARNING   Severe class imbalance detected (52.2x). Consider weighted loss or oversampling.
+20:20:24  INFO      Class distribution chart saved to: Dataset\plantwild\class_distribution.png
+20:20:24  INFO      Splitting: train=70%  val=15%  test=15%  (stratified)
+20:20:24  INFO      Split sizes — train: 6606  val: 1416  test: 1416
+20:21:42  INFO      Summary written to: Dataset\plantwild\preprocessing_summary.txt
+20:21:42  INFO      Preprocessing complete.
+20:21:42  INFO      Output ready at: Dataset\plantwild
