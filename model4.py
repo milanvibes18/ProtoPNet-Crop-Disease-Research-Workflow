@@ -19,13 +19,17 @@ from tqdm import tqdm
 warnings.filterwarnings("ignore", category=UserWarning)
 
 # =============================================================================
-# CONFIG
+# CONFIG (KAGGLE VERSION FOR MODEL 4)
 # =============================================================================
 CONFIG = {
-    "TRAIN_DIR"             : "./Dataset/plantwild/train",
-    "VAL_DIR"               : "./Dataset/plantwild/val",
-    "TEST_DIR"              : "./Dataset/plantwild/test",
-    "SAVE_DIR"              : "./saves/plantwild_protopnet",
+    # The EXACT Kaggle Input Paths
+    "TRAIN_DIR"             : "/kaggle/input/datasets/milanvibes18/protopnet-plantwild-98-classes/plantwild/train",
+    "VAL_DIR"               : "/kaggle/input/datasets/milanvibes18/protopnet-plantwild-98-classes/plantwild/val",
+    "TEST_DIR"              : "/kaggle/input/datasets/milanvibes18/protopnet-plantwild-98-classes/plantwild/test",
+    
+    # Kaggle Output Path (Writeable)
+    "SAVE_DIR"              : "/kaggle/working/saves/plantwild_protopnet",
+    
     "NUM_CLASSES"           : 98,
     "IMG_SIZE"              : 224,
     "IMAGENET_MEAN"         : [0.485, 0.456, 0.406],
@@ -53,11 +57,15 @@ CONFIG = {
     "NUM_WORKERS"           : 4,
     "SAVE_EVERY"            : 5,
     "RANDOM_SEED"           : 42,
-    "USE_AMP"               : True,
+    
+    # Keep AMP True if using T4 GPU, change to False if using P100 GPU
+    "USE_AMP"               : True, 
     "PIN_MEMORY"            : True,
     "POSITIVE_WEIGHT_INIT"  :  1.0,
     "NEGATIVE_WEIGHT_INIT"  : -0.5,
-    "LOG_FILE"              : "training.log",
+    
+    # Kaggle Log Path
+    "LOG_FILE"              : "/kaggle/working/training.log",
 }
 
 # =============================================================================
@@ -495,11 +503,9 @@ class Model:
 # =============================================================================
 # EXECUTION
 # =============================================================================
-
-M = Model()
-M.summary()
-M.train()
-results = M.evaluate("test")
-log.info(f"Final Test Accuracy : {results['top1_acc']:.4f}")
-log.info(f"Final Top-5 Accuracy: {results['top5_acc']:.4f}")
-log.info(f"Final Test Loss     : {results['loss']:.4f}")
+if __name__ == "__main__":
+    M = Model()
+    M.summary()
+    M.train()
+    results = M.evaluate("test")
+    print(f"Final Test Accuracy: {results['top1_acc']:.4f}")
