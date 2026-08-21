@@ -1,0 +1,2 @@
+variant,seed,backbone,use_se,use_srm,similarity,phase4,use_mixup,n_params_M,best_val,test_acc,gen_gap,delta_vs_full,runtime_h
+"V2: ConvNeXt Cosine (no SE, no SRM)",42,convnext_tiny,False,False,cosine,True,True,28.07,99.75,99.72,-0.159,0.07,7.03

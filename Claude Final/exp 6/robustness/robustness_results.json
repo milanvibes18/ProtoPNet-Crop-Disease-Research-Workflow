@@ -1,0 +1,67 @@
+{
+  "probe1_background_swap": {
+    "POWER-ProtoPNet": {
+      "original_acc": 99.82,
+      "swapped_acc": 98.07,
+      "delta_pp": -1.75
+    },
+    "BlackBox": {
+      "original_acc": 99.7,
+      "swapped_acc": 97.65,
+      "delta_pp": -2.05
+    },
+    "_comparison": {
+      "more_robust_model": "POWER-ProtoPNet",
+      "pnet_delta": -1.75,
+      "blackbox_delta": -2.05
+    }
+  },
+  "probe2_corruption": {
+    "POWER-ProtoPNet": {
+      "gaussian_noise_sev1": 98.67,
+      "gaussian_noise_sev2": 91.53,
+      "gaussian_noise_sev3": 81.4,
+      "defocus_blur_sev1": 99.67,
+      "defocus_blur_sev2": 95.6,
+      "defocus_blur_sev3": 86.8,
+      "brightness_sev1": 99.73,
+      "brightness_sev2": 99.53,
+      "brightness_sev3": 97.4,
+      "contrast_sev1": 99.8,
+      "contrast_sev2": 99.73,
+      "contrast_sev3": 98.67,
+      "jpeg_sev1": 99.6,
+      "jpeg_sev2": 99.13,
+      "jpeg_sev3": 90.47
+    },
+    "BlackBox": {
+      "gaussian_noise_sev1": 99.33,
+      "gaussian_noise_sev2": 97.2,
+      "gaussian_noise_sev3": 89.33,
+      "defocus_blur_sev1": 99.4,
+      "defocus_blur_sev2": 92.87,
+      "defocus_blur_sev3": 83.07,
+      "brightness_sev1": 99.67,
+      "brightness_sev2": 99.07,
+      "brightness_sev3": 96.67,
+      "contrast_sev1": 99.67,
+      "contrast_sev2": 99.53,
+      "contrast_sev3": 98.8,
+      "jpeg_sev1": 99.8,
+      "jpeg_sev2": 99.0,
+      "jpeg_sev3": 92.73
+    },
+    "_summary": {
+      "POWER-ProtoPNet": {
+        "mCE": 4.15,
+        "relative_mCE": 1.0
+      },
+      "BlackBox": {
+        "mCE": 3.59,
+        "relative_mCE": 0.865
+      }
+    },
+    "_n_subsample": 1500
+  },
+  "probe3_plantdoc": null
+}

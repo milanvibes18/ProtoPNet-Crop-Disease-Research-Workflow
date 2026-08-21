@@ -1,0 +1,31 @@
+# backend/requirements.txt
+# Install with: pip install -r requirements.txt
+
+# ── Core ──────────────────────────────────────────────────────────────────────
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9        # file upload support
+
+# ── ML / Model ────────────────────────────────────────────────────────────────
+torch>=2.2.0
+torchvision>=0.17.0
+timm>=0.9.16                   # ConvNeXt pretrained weights fallback
+
+# ── Image Processing ──────────────────────────────────────────────────────────
+Pillow>=10.3.0
+numpy>=1.26.0
+opencv-python-headless>=4.9.0  # GradCAM overlay blending
+
+# ── Explainability ────────────────────────────────────────────────────────────
+shap>=0.45.0                   # KernelSHAP
+matplotlib>=3.8.0              # heatmap rendering
+scipy>=1.13.0                  # gaussian smoothing for SHAP maps
+
+# ── API & Serialisation ───────────────────────────────────────────────────────
+pydantic>=2.7.0
+orjson>=3.10.0                 # fast JSON serialisation
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+python-dotenv>=1.0.0
+loguru>=0.7.2
+tqdm>=4.66.0

@@ -1,0 +1,2 @@
+variant,seed,backbone,use_se,use_srm,similarity,phase4,use_mixup,n_params_M,best_val,test_acc,gen_gap,delta_vs_full,runtime_h
+"V7: Full model, no MixUp/CutMix",42,convnext_tiny,True,True,cosine,True,False,28.15,99.67,99.72,-0.221,0.07,7.15

@@ -1,0 +1,9 @@
+{
+  "mean_acc": 99.77,
+  "std_acc": 0.0,
+  "n_seeds": 1,
+  "all_accs": [
+    99.77
+  ],
+  "n_params_M": 28.1
+}

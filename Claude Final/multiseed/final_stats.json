@@ -1,0 +1,63 @@
+{
+  "pnet": {
+    "n": 1,
+    "mean": 99.65,
+    "std": NaN,
+    "min": 99.65,
+    "max": 99.65,
+    "ci_lo": NaN,
+    "ci_hi": NaN,
+    "accs": [
+      99.65
+    ]
+  },
+  "blackbox": {
+    "n": 3,
+    "mean": 99.657,
+    "std": 0.116,
+    "min": 99.58,
+    "max": 99.79,
+    "ci_lo": 99.369,
+    "ci_hi": 99.945,
+    "accs": [
+      99.58,
+      99.6,
+      99.79
+    ]
+  },
+  "ttest": null,
+  "mcnemar": {
+    "n": 5700,
+    "both_correct": 0,
+    "pnet_only": 0,
+    "bb_only": 5669,
+    "both_wrong": 31,
+    "chi2": 5667.0,
+    "p_value": 0.0,
+    "significant_at_05": true
+  },
+  "pnet_per_seed": [
+    {
+      "seed": 0,
+      "test_acc": 99.65,
+      "best_val": 99.77
+    }
+  ],
+  "bb_per_seed": [
+    {
+      "seed": 0,
+      "test_acc": 99.58,
+      "best_val": 99.64
+    },
+    {
+      "seed": 2,
+      "test_acc": 99.6,
+      "best_val": 99.65
+    },
+    {
+      "seed": 3,
+      "test_acc": 99.79,
+      "best_val": 99.75
+    }
+  ]
+}

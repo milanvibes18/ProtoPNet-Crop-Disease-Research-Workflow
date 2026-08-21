@@ -1,0 +1,2 @@
+filename,test_acc,config
+"V1_ConvNeXt_L2_(no_SE,_no_SRM)_s42.pth",99.82,"{'use_se': False, 'use_srm': False, 'similarity': 'l2'}"

@@ -1,0 +1,2 @@
+variant,seed,backbone,use_se,use_srm,similarity,phase4,use_mixup,n_params_M,best_val,test_acc,gen_gap,delta_vs_full,runtime_h
+V8: Full POWER-ProtoPNet,42,convnext_tiny,True,True,cosine,True,True,28.15,99.77,99.82,-0.206,0.17,7.93

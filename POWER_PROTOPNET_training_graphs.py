@@ -1,0 +1,719 @@
+# =============================================================================
+# POWER-PROTOPNET — Training Log Visualiser
+# Parses power_training_log.txt and generates publication-quality training graphs
+# =============================================================================
+
+import re
+import json
+import logging
+import sys
+from datetime import datetime, timedelta
+from pathlib import Path
+
+import numpy as np
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+import matplotlib.patches as mpatches
+from matplotlib.ticker import MaxNLocator
+
+# =============================================================================
+# CONFIG
+# =============================================================================
+CONFIG = {
+    "LOG_PATH"  : "power_training_log.txt",   # ← path to your log file
+    "SAVE_DIR"  : "./training_graphs",
+    "DPI"       : 200,                        # 300 for final paper figures
+
+    # Style — "dark" or "light"
+    "THEME"     : "dark",
+}
+
+# =============================================================================
+# LOGGING
+# =============================================================================
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s  %(levelname)-8s  %(message)s",
+    datefmt="%H:%M:%S",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
+log = logging.getLogger(__name__)
+
+
+# =============================================================================
+# THEME
+# =============================================================================
+DARK = {
+    "bg"        : "#0d1117",
+    "panel"     : "#161b22",
+    "grid"      : "#21262d",
+    "text"      : "#e6edf3",
+    "subtext"   : "#8b949e",
+    "train_acc" : "#58a6ff",
+    "val_acc"   : "#3fb950",
+    "train_loss": "#f78166",
+    "val_loss"  : "#ffa657",
+    "proto"     : "#bc8cff",
+    "early_stop": "#ff7b72",
+    "best"      : "#ffd700",
+    "phase_p1"  : "#1f4068",
+    "phase_p2"  : "#1b4332",
+    "phase_p4"  : "#3b1f2b",
+}
+
+LIGHT = {
+    "bg"        : "#ffffff",
+    "panel"     : "#f6f8fa",
+    "grid"      : "#d0d7de",
+    "text"      : "#1f2328",
+    "subtext"   : "#57606a",
+    "train_acc" : "#0969da",
+    "val_acc"   : "#1a7f37",
+    "train_loss": "#cf222e",
+    "val_loss"  : "#d4a017",
+    "proto"     : "#8250df",
+    "early_stop": "#cf222e",
+    "best"      : "#bf8700",
+    "phase_p1"  : "#ddf4ff",
+    "phase_p2"  : "#dafbe1",
+    "phase_p4"  : "#ffeff7",
+}
+
+def get_theme():
+    return DARK if CONFIG["THEME"] == "dark" else LIGHT
+
+
+# =============================================================================
+# PARSER
+# =============================================================================
+class LogParser:
+    """
+    Parses POWER-ProtoPNet training logs into structured data.
+
+    Extracted fields
+    ────────────────
+    phase2_epochs  : list[dict]  → ep, train_acc, val_acc, val_loss, timestamp
+    proto_push_eps : list[int]   → phase-2 epoch numbers where prototype push ran
+    early_stop_ep  : int | None  → phase-2 epoch that triggered early stopping
+    best_ep        : int | None  → epoch with best val_acc
+    final_test_acc : float | None
+    phase1_times   : list[str]
+    phase4_times   : list[str]
+    """
+
+    _EP2 = re.compile(
+        r"(\d{2}:\d{2}:\d{2})\s+INFO\s+"
+        r"Ep (\d+) \| Train Acc: ([\d.]+) \| Val Acc: ([\d.]+) \| Val Loss: ([\d.]+)"
+    )
+    _PROTO = re.compile(r"Updating Prototypes \(Patch Matching\)")
+    _EARLY = re.compile(r"Early Stopping Triggered")
+    _TEST  = re.compile(r"FINAL TEST ACCURACY: ([\d.]+)")
+    _P1    = re.compile(r"Ep (\d+) Warmup Complete")
+    _P4    = re.compile(r"Ep (\d+) FC Tuning Complete")
+    _TIME  = re.compile(r"^(\d{2}:\d{2}:\d{2})")
+
+    def __init__(self, log_path: str):
+        self.log_path = Path(log_path)
+        self._raw     = self.log_path.read_text(encoding="utf-8").splitlines()
+
+    def parse(self) -> dict:
+        phase2_epochs  = []
+        proto_push_eps = []
+        early_stop_ep  = None
+        final_test_acc = None
+        phase1_times   = []
+        phase4_times   = []
+        last_proto_ts  = None   # track proto push timing
+
+        # We'll infer which phase-2 epoch corresponds to a proto push by tracking
+        # the last ep number seen before each push line
+        pending_proto  = False
+        last_ep_num    = 0
+
+        for line in self._raw:
+            # ── Phase 1 warmup ──
+            m = self._P1.search(line)
+            if m:
+                ts = self._TIME.match(line)
+                phase1_times.append({"ep": int(m.group(1)),
+                                     "ts": ts.group(1) if ts else ""})
+                continue
+
+            # ── Prototype push marker ──
+            if self._PROTO.search(line):
+                pending_proto = True
+                continue
+
+            # ── Phase 2 epoch ──
+            m = self._EP2.search(line)
+            if m:
+                ts, ep, tr_acc, val_acc, val_loss = (
+                    m.group(1), int(m.group(2)),
+                    float(m.group(3)), float(m.group(4)), float(m.group(5))
+                )
+                phase2_epochs.append({
+                    "ep"       : ep,
+                    "train_acc": tr_acc,
+                    "val_acc"  : val_acc,
+                    "val_loss" : val_loss,
+                    "ts"       : ts,
+                })
+                if pending_proto:
+                    proto_push_eps.append(ep)
+                    pending_proto = False
+                last_ep_num = ep
+                continue
+
+            # ── Early stopping ──
+            if self._EARLY.search(line):
+                early_stop_ep = last_ep_num
+                continue
+
+            # ── Phase 4 FC tuning ──
+            m = self._P4.search(line)
+            if m:
+                ts = self._TIME.match(line)
+                phase4_times.append({"ep": int(m.group(1)),
+                                     "ts": ts.group(1) if ts else ""})
+                continue
+
+            # ── Final test acc ──
+            m = self._TEST.search(line)
+            if m:
+                final_test_acc = float(m.group(1))
+
+        # Derive best epoch
+        if phase2_epochs:
+            best_ep = max(phase2_epochs, key=lambda r: r["val_acc"])["ep"]
+        else:
+            best_ep = None
+
+        return {
+            "phase2_epochs" : phase2_epochs,
+            "proto_push_eps": proto_push_eps,
+            "early_stop_ep" : early_stop_ep,
+            "best_ep"       : best_ep,
+            "final_test_acc": final_test_acc,
+            "phase1_times"  : phase1_times,
+            "phase4_times"  : phase4_times,
+        }
+
+
+# =============================================================================
+# GRAPH GENERATOR
+# =============================================================================
+class TrainingGraphs:
+
+    def __init__(self, data: dict, save_dir: str):
+        self.d        = data
+        self.save_dir = Path(save_dir)
+        self.save_dir.mkdir(parents=True, exist_ok=True)
+        self.T        = get_theme()
+        self.dpi      = CONFIG["DPI"]
+
+        self.eps       = [r["ep"]        for r in self.d["phase2_epochs"]]
+        self.tr_acc    = [r["train_acc"] for r in self.d["phase2_epochs"]]
+        self.val_acc   = [r["val_acc"]   for r in self.d["phase2_epochs"]]
+        self.val_loss  = [r["val_loss"]  for r in self.d["phase2_epochs"]]
+
+        log.info(f"Phase-2 epochs parsed : {len(self.eps)}")
+        log.info(f"Prototype push epochs : {self.d['proto_push_eps']}")
+        log.info(f"Early stop epoch      : {self.d['early_stop_ep']}")
+        log.info(f"Best val-acc epoch    : {self.d['best_ep']}")
+        log.info(f"Final test accuracy   : {self.d['final_test_acc']}")
+
+    # ── Helpers ────────────────────────────────────────────────────────────────
+
+    def _apply_base_style(self, fig, axes_flat):
+        T = self.T
+        fig.patch.set_facecolor(T["bg"])
+        for ax in axes_flat:
+            ax.set_facecolor(T["panel"])
+            ax.tick_params(colors=T["subtext"], labelsize=9)
+            ax.xaxis.label.set_color(T["text"])
+            ax.yaxis.label.set_color(T["text"])
+            ax.title.set_color(T["text"])
+            ax.spines["bottom"].set_color(T["grid"])
+            ax.spines["left"].set_color(T["grid"])
+            ax.spines["top"].set_visible(False)
+            ax.spines["right"].set_visible(False)
+            ax.grid(True, color=T["grid"], linewidth=0.6, linestyle="--", alpha=0.7)
+            ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+    def _mark_proto_pushes(self, ax, ymin=0, ymax=1):
+        T = self.T
+        for ep in self.d["proto_push_eps"]:
+            ax.axvline(ep, color=T["proto"], linewidth=0.9,
+                       linestyle=":", alpha=0.75)
+
+    def _mark_early_stop(self, ax):
+        ep = self.d["early_stop_ep"]
+        if ep:
+            ax.axvline(ep, color=self.T["early_stop"], linewidth=1.4,
+                       linestyle="--", alpha=0.9, label=f"Early Stop (Ep {ep})")
+
+    def _mark_best(self, ax, y_series):
+        ep  = self.d["best_ep"]
+        idx = next((i for i, r in enumerate(self.d["phase2_epochs"])
+                    if r["ep"] == ep), None)
+        if idx is not None:
+            ax.scatter([ep], [y_series[idx]], color=self.T["best"],
+                       zorder=6, s=90, marker="*",
+                       label=f"Best (Ep {ep}, {y_series[idx]:.4f})")
+
+    def _save(self, fig, name):
+        path = self.save_dir / name
+        fig.savefig(path, dpi=self.dpi, bbox_inches="tight",
+                    facecolor=fig.get_facecolor())
+        plt.close(fig)
+        log.info(f"Saved → {path}")
+
+    # ── 1. Accuracy Curve ──────────────────────────────────────────────────────
+
+    def plot_accuracy(self):
+        T   = self.T
+        fig, ax = plt.subplots(figsize=(10, 5))
+        self._apply_base_style(fig, [ax])
+
+        ax.plot(self.eps, self.tr_acc,  color=T["train_acc"], linewidth=2,
+                marker="o", markersize=3.5, label="Train Accuracy")
+        ax.plot(self.eps, self.val_acc, color=T["val_acc"],   linewidth=2,
+                marker="s", markersize=3.5, label="Val Accuracy")
+
+        self._mark_proto_pushes(ax)
+        self._mark_early_stop(ax)
+        self._mark_best(ax, self.val_acc)
+
+        ax.set_xlabel("Epoch (Phase 2 – Joint Training)", fontsize=11)
+        ax.set_ylabel("Accuracy", fontsize=11)
+        ax.set_title("Train vs Validation Accuracy", fontsize=13, fontweight="bold", pad=10)
+        ax.set_ylim(max(0, min(self.tr_acc + self.val_acc) - 0.01), 1.005)
+
+        # Proto push legend entry
+        proto_line = plt.Line2D([0], [0], color=T["proto"], linewidth=1.2,
+                                linestyle=":", label="Prototype Push")
+        handles, labels = ax.get_legend_handles_labels()
+        ax.legend(handles + [proto_line], labels + ["Prototype Push"],
+                  facecolor=T["panel"], edgecolor=T["grid"],
+                  labelcolor=T["text"], fontsize=9)
+
+        # Annotate final test acc
+        if self.d["final_test_acc"]:
+            ax.annotate(
+                f"Test Acc = {self.d['final_test_acc']:.4f}",
+                xy=(0.98, 0.04), xycoords="axes fraction",
+                ha="right", fontsize=9.5, color=T["best"],
+                bbox=dict(boxstyle="round,pad=0.35", facecolor=T["panel"],
+                          edgecolor=T["best"], alpha=0.9)
+            )
+
+        self._save(fig, "01_accuracy_curve.png")
+
+    # ── 2. Validation Loss Curve ───────────────────────────────────────────────
+
+    def plot_val_loss(self):
+        T   = self.T
+        fig, ax = plt.subplots(figsize=(10, 5))
+        self._apply_base_style(fig, [ax])
+
+        ax.plot(self.eps, self.val_loss, color=T["val_loss"], linewidth=2,
+                marker="D", markersize=3.5, label="Val Loss")
+        ax.fill_between(self.eps, self.val_loss,
+                        alpha=0.15, color=T["val_loss"])
+
+        self._mark_proto_pushes(ax)
+        self._mark_early_stop(ax)
+
+        # Annotate min loss
+        min_idx = int(np.argmin(self.val_loss))
+        ax.scatter([self.eps[min_idx]], [self.val_loss[min_idx]],
+                   color=T["best"], zorder=6, s=90, marker="*",
+                   label=f"Min Loss Ep {self.eps[min_idx]} ({self.val_loss[min_idx]:.4f})")
+
+        ax.set_xlabel("Epoch (Phase 2 – Joint Training)", fontsize=11)
+        ax.set_ylabel("Validation Loss", fontsize=11)
+        ax.set_title("Validation Loss over Training", fontsize=13, fontweight="bold", pad=10)
+
+        proto_line = plt.Line2D([0], [0], color=T["proto"], linewidth=1.2,
+                                linestyle=":", label="Prototype Push")
+        handles, labels = ax.get_legend_handles_labels()
+        ax.legend(handles + [proto_line], labels + ["Prototype Push"],
+                  facecolor=T["panel"], edgecolor=T["grid"],
+                  labelcolor=T["text"], fontsize=9)
+
+        self._save(fig, "02_val_loss_curve.png")
+
+    # ── 3. Train Acc vs Val Acc vs Val Loss (3-axis combo) ────────────────────
+
+    def plot_combo(self):
+        T   = self.T
+        fig, ax1 = plt.subplots(figsize=(12, 5.5))
+        self._apply_base_style(fig, [ax1])
+
+        ax1.plot(self.eps, self.tr_acc,  color=T["train_acc"], linewidth=2,
+                 label="Train Acc", marker="o", markersize=3)
+        ax1.plot(self.eps, self.val_acc, color=T["val_acc"],   linewidth=2,
+                 label="Val Acc",   marker="s", markersize=3)
+        ax1.set_ylabel("Accuracy", fontsize=11)
+        ax1.set_ylim(max(0, min(self.tr_acc + self.val_acc) - 0.01), 1.005)
+
+        ax2 = ax1.twinx()
+        ax2.set_facecolor(T["panel"])
+        ax2.plot(self.eps, self.val_loss, color=T["val_loss"], linewidth=1.8,
+                 linestyle="--", label="Val Loss", marker="D", markersize=2.5, alpha=0.85)
+        ax2.set_ylabel("Validation Loss", fontsize=11, color=T["val_loss"])
+        ax2.tick_params(axis="y", colors=T["val_loss"], labelsize=9)
+        ax2.spines["right"].set_color(T["val_loss"])
+        ax2.spines["right"].set_visible(True)
+        ax2.spines["top"].set_visible(False)
+        ax2.spines["bottom"].set_color(T["grid"])
+        ax2.spines["left"].set_color(T["grid"])
+
+        self._mark_proto_pushes(ax1)
+        self._mark_early_stop(ax1)
+
+        ax1.set_xlabel("Epoch (Phase 2 – Joint Training)", fontsize=11)
+        ax1.set_title("Training Overview: Accuracy & Loss", fontsize=13,
+                      fontweight="bold", pad=10)
+
+        # Combined legend
+        lines1, labels1 = ax1.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        proto_line = plt.Line2D([0], [0], color=T["proto"], linewidth=1.2,
+                                linestyle=":", label="Prototype Push")
+        ax1.legend(lines1 + lines2 + [proto_line],
+                   labels1 + labels2 + ["Prototype Push"],
+                   facecolor=T["panel"], edgecolor=T["grid"],
+                   labelcolor=T["text"], fontsize=9, loc="lower right")
+
+        self._save(fig, "03_combo_accuracy_loss.png")
+
+    # ── 4. Generalisation Gap (Train Acc − Val Acc) ────────────────────────────
+
+    def plot_generalization_gap(self):
+        T   = self.T
+        gap = [tr - va for tr, va in zip(self.tr_acc, self.val_acc)]
+        fig, ax = plt.subplots(figsize=(10, 4.5))
+        self._apply_base_style(fig, [ax])
+
+        ax.fill_between(self.eps, gap, 0, where=[g > 0 for g in gap],
+                        alpha=0.35, color=T["train_loss"], label="Overfitting Zone")
+        ax.fill_between(self.eps, gap, 0, where=[g <= 0 for g in gap],
+                        alpha=0.25, color=T["val_acc"], label="Val > Train")
+        ax.plot(self.eps, gap, color=T["train_loss"], linewidth=2, marker="o", markersize=3)
+        ax.axhline(0, color=T["grid"], linewidth=1.2, linestyle="-")
+
+        self._mark_proto_pushes(ax)
+        self._mark_early_stop(ax)
+
+        ax.set_xlabel("Epoch (Phase 2)", fontsize=11)
+        ax.set_ylabel("Train Acc − Val Acc", fontsize=11)
+        ax.set_title("Generalisation Gap (Overfitting Monitor)", fontsize=13,
+                     fontweight="bold", pad=10)
+
+        handles, labels = ax.get_legend_handles_labels()
+        proto_line = plt.Line2D([0], [0], color=T["proto"], linewidth=1.2,
+                                linestyle=":", label="Prototype Push")
+        ax.legend(handles + [proto_line], labels + ["Prototype Push"],
+                  facecolor=T["panel"], edgecolor=T["grid"],
+                  labelcolor=T["text"], fontsize=9)
+
+        self._save(fig, "04_generalization_gap.png")
+
+    # ── 5. Val Loss Smoothed + Rolling Std ────────────────────────────────────
+
+    def plot_loss_stability(self, window=5):
+        T   = self.T
+        loss_arr = np.array(self.val_loss)
+        smoothed = np.convolve(loss_arr, np.ones(window) / window, mode="same")
+        # Rolling std
+        half = window // 2
+        std  = [loss_arr[max(0, i-half): i+half+1].std() for i in range(len(loss_arr))]
+
+        fig, ax = plt.subplots(figsize=(10, 4.5))
+        self._apply_base_style(fig, [ax])
+
+        ax.plot(self.eps, loss_arr, color=T["val_loss"], linewidth=1.5,
+                alpha=0.5, label="Raw Val Loss")
+        ax.plot(self.eps, smoothed,  color=T["train_acc"], linewidth=2,
+                label=f"Smoothed (w={window})")
+        ax.fill_between(self.eps,
+                        smoothed - std, smoothed + std,
+                        alpha=0.18, color=T["train_acc"], label="±1 Std Dev")
+
+        self._mark_proto_pushes(ax)
+        self._mark_early_stop(ax)
+
+        ax.set_xlabel("Epoch (Phase 2)", fontsize=11)
+        ax.set_ylabel("Validation Loss", fontsize=11)
+        ax.set_title(f"Val Loss Stability (Rolling Window = {window})",
+                     fontsize=13, fontweight="bold", pad=10)
+
+        proto_line = plt.Line2D([0], [0], color=T["proto"], linewidth=1.2,
+                                linestyle=":", label="Prototype Push")
+        handles, labels = ax.get_legend_handles_labels()
+        ax.legend(handles + [proto_line], labels + ["Prototype Push"],
+                  facecolor=T["panel"], edgecolor=T["grid"],
+                  labelcolor=T["text"], fontsize=9)
+
+        self._save(fig, "05_loss_stability.png")
+
+    # ── 6. Prototype Push Impact ───────────────────────────────────────────────
+
+    def plot_prototype_push_impact(self):
+        """Shows val-acc delta before vs after each prototype push epoch."""
+        T    = self.T
+        data = self.d["phase2_epochs"]
+        push_eps = self.d["proto_push_eps"]
+
+        deltas = []
+        for pep in push_eps:
+            idxs = [i for i, r in enumerate(data) if r["ep"] == pep]
+            if not idxs: continue
+            idx = idxs[0]
+            if idx == 0: continue
+            delta = data[idx]["val_acc"] - data[idx - 1]["val_acc"]
+            deltas.append((pep, delta))
+
+        if not deltas:
+            log.warning("No prototype push delta data available.")
+            return
+
+        eps_p, delta_v = zip(*deltas)
+        colors = [T["val_acc"] if d >= 0 else T["train_loss"] for d in delta_v]
+
+        fig, ax = plt.subplots(figsize=(9, 4.5))
+        self._apply_base_style(fig, [ax])
+
+        bars = ax.bar(eps_p, delta_v, color=colors, edgecolor=T["bg"],
+                      width=0.6)
+        ax.axhline(0, color=T["grid"], linewidth=1)
+
+        for bar, val in zip(bars, delta_v):
+            ax.text(bar.get_x() + bar.get_width() / 2,
+                    bar.get_height() + (0.00005 if val >= 0 else -0.0003),
+                    f"{val:+.4f}", ha="center", va="bottom" if val >= 0 else "top",
+                    fontsize=7.5, color=T["text"])
+
+        ax.set_xlabel("Epoch Where Prototype Push Applied", fontsize=11)
+        ax.set_ylabel("ΔVal Accuracy (after − before push)", fontsize=11)
+        ax.set_title("Impact of Each Prototype Push on Validation Accuracy",
+                     fontsize=12, fontweight="bold", pad=10)
+
+        pos_patch = mpatches.Patch(color=T["val_acc"],    label="Positive impact")
+        neg_patch = mpatches.Patch(color=T["train_loss"], label="Negative impact")
+        ax.legend(handles=[pos_patch, neg_patch],
+                  facecolor=T["panel"], edgecolor=T["grid"],
+                  labelcolor=T["text"], fontsize=9)
+
+        self._save(fig, "06_prototype_push_impact.png")
+
+    # ── 7. Training Timeline ──────────────────────────────────────────────────
+
+    def plot_training_timeline(self):
+        """Horizontal Gantt-style bar showing Phase 1 / 2 / 4 epochs."""
+        T     = self.T
+        p1    = len(self.d["phase1_times"])
+        p2    = len(self.d["phase2_epochs"])
+        p4    = len(self.d["phase4_times"])
+        total = p1 + p2 + p4
+
+        fig, ax = plt.subplots(figsize=(12, 2.6))
+        self._apply_base_style(fig, [ax])
+        fig.patch.set_facecolor(T["bg"])
+
+        phases = [
+            (0,            p1,      T["phase_p1"], "Phase 1\nWarmup",       f"{p1} eps"),
+            (p1,           p1+p2,   T["phase_p2"], "Phase 2\nJoint Train",  f"{p2} eps"),
+            (p1+p2,        total,   T["phase_p4"], "Phase 4\nFC Fine-tune", f"{p4} eps"),
+        ]
+
+        for start, end, color, label, detail in phases:
+            ax.barh(0, end - start, left=start, height=0.55,
+                    color=color, edgecolor=T["grid"], linewidth=1.2)
+            cx = start + (end - start) / 2
+            ax.text(cx, 0.38, label,  ha="center", va="center",
+                    fontsize=9, fontweight="bold", color=T["text"])
+            ax.text(cx, -0.38, detail, ha="center", va="center",
+                    fontsize=8, color=T["subtext"])
+
+        # Proto push markers on timeline
+        for pep in self.d["proto_push_eps"]:
+            ax.axvline(p1 + pep - 1, color=T["proto"], linewidth=1.2,
+                       linestyle=":", alpha=0.8)
+
+        ax.set_xlim(0, total)
+        ax.set_ylim(-0.7, 0.7)
+        ax.set_xlabel("Global Epoch Index", fontsize=10)
+        ax.set_yticks([])
+        ax.set_title("Training Timeline — Phase Breakdown", fontsize=12,
+                     fontweight="bold", pad=10)
+
+        if self.d["final_test_acc"]:
+            ax.text(total, 0.55,
+                    f"Test Acc\n{self.d['final_test_acc']:.4f}",
+                    ha="right", va="top", fontsize=9, color=T["best"],
+                    bbox=dict(boxstyle="round,pad=0.3", facecolor=T["panel"],
+                              edgecolor=T["best"], alpha=0.9))
+
+        self._save(fig, "07_training_timeline.png")
+
+    # ── 8. Master Dashboard ────────────────────────────────────────────────────
+
+    def plot_dashboard(self):
+        T   = self.T
+        fig = plt.figure(figsize=(18, 12), facecolor=T["bg"])
+        fig.suptitle(
+            "POWER-ProtoPNet  |  Training Dashboard",
+            fontsize=16, fontweight="bold", color=T["text"], y=0.98
+        )
+
+        gs = gridspec.GridSpec(3, 3, figure=fig,
+                               hspace=0.42, wspace=0.32,
+                               left=0.06, right=0.97,
+                               top=0.93, bottom=0.07)
+
+        # ── Row 0 ──────────────────────────────────────────────────────────────
+        ax_acc   = fig.add_subplot(gs[0, 0:2])
+        ax_loss  = fig.add_subplot(gs[0, 2])
+
+        # ── Row 1 ──────────────────────────────────────────────────────────────
+        ax_gap   = fig.add_subplot(gs[1, 0:2])
+        ax_stab  = fig.add_subplot(gs[1, 2])
+
+        # ── Row 2 ──────────────────────────────────────────────────────────────
+        ax_proto = fig.add_subplot(gs[2, 0:2])
+        ax_kpi   = fig.add_subplot(gs[2, 2])
+
+        all_axes = [ax_acc, ax_loss, ax_gap, ax_stab, ax_proto, ax_kpi]
+        self._apply_base_style(fig, all_axes)
+
+        # ── Accuracy ──
+        ax_acc.plot(self.eps, self.tr_acc,  color=T["train_acc"], lw=2,
+                    marker="o", ms=3, label="Train Acc")
+        ax_acc.plot(self.eps, self.val_acc, color=T["val_acc"],   lw=2,
+                    marker="s", ms=3, label="Val Acc")
+        self._mark_proto_pushes(ax_acc)
+        self._mark_early_stop(ax_acc)
+        self._mark_best(ax_acc, self.val_acc)
+        ax_acc.set_title("Accuracy", fontsize=11, fontweight="bold")
+        ax_acc.set_ylabel("Accuracy"); ax_acc.set_xlabel("Epoch")
+        ax_acc.set_ylim(max(0, min(self.tr_acc+self.val_acc) - 0.008), 1.003)
+        ax_acc.legend(facecolor=T["panel"], edgecolor=T["grid"],
+                      labelcolor=T["text"], fontsize=8)
+
+        # ── Val Loss ──
+        ax_loss.plot(self.eps, self.val_loss, color=T["val_loss"], lw=2,
+                     marker="D", ms=3)
+        ax_loss.fill_between(self.eps, self.val_loss, alpha=0.15, color=T["val_loss"])
+        self._mark_proto_pushes(ax_loss)
+        self._mark_early_stop(ax_loss)
+        ax_loss.set_title("Val Loss", fontsize=11, fontweight="bold")
+        ax_loss.set_ylabel("Loss"); ax_loss.set_xlabel("Epoch")
+
+        # ── Gap ──
+        gap = [tr - va for tr, va in zip(self.tr_acc, self.val_acc)]
+        ax_gap.fill_between(self.eps, gap, 0, where=[g > 0 for g in gap],
+                            alpha=0.35, color=T["train_loss"])
+        ax_gap.fill_between(self.eps, gap, 0, where=[g <= 0 for g in gap],
+                            alpha=0.25, color=T["val_acc"])
+        ax_gap.plot(self.eps, gap, color=T["train_loss"], lw=1.8, marker="o", ms=2.5)
+        ax_gap.axhline(0, color=T["grid"], lw=1)
+        self._mark_proto_pushes(ax_gap)
+        ax_gap.set_title("Generalisation Gap", fontsize=11, fontweight="bold")
+        ax_gap.set_ylabel("Train − Val Acc"); ax_gap.set_xlabel("Epoch")
+
+        # ── Loss Stability ──
+        loss_arr = np.array(self.val_loss)
+        w = 5
+        smoothed = np.convolve(loss_arr, np.ones(w)/w, mode="same")
+        ax_stab.plot(self.eps, loss_arr, color=T["val_loss"], lw=1.3, alpha=0.45)
+        ax_stab.plot(self.eps, smoothed,  color=T["train_acc"], lw=2,
+                     label=f"Smooth (w={w})")
+        ax_stab.set_title("Loss Stability", fontsize=11, fontweight="bold")
+        ax_stab.set_ylabel("Val Loss"); ax_stab.set_xlabel("Epoch")
+        ax_stab.legend(facecolor=T["panel"], edgecolor=T["grid"],
+                       labelcolor=T["text"], fontsize=8)
+
+        # ── Prototype Push Impact ──
+        push_eps = self.d["proto_push_eps"]
+        data     = self.d["phase2_epochs"]
+        deltas   = []
+        for pep in push_eps:
+            idxs = [i for i, r in enumerate(data) if r["ep"] == pep]
+            if idxs and idxs[0] > 0:
+                d = data[idxs[0]]["val_acc"] - data[idxs[0]-1]["val_acc"]
+                deltas.append((pep, d))
+        if deltas:
+            eps_p, dv = zip(*deltas)
+            colors = [T["val_acc"] if d >= 0 else T["train_loss"] for d in dv]
+            ax_proto.bar(eps_p, dv, color=colors, edgecolor=T["bg"], width=0.6)
+            ax_proto.axhline(0, color=T["grid"], lw=1)
+        ax_proto.set_title("Prototype Push ΔVal Acc", fontsize=11, fontweight="bold")
+        ax_proto.set_ylabel("Δ Val Acc"); ax_proto.set_xlabel("Epoch")
+
+        # ── KPI Summary ──
+        ax_kpi.axis("off")
+        best_val   = max(self.val_acc)
+        min_loss   = min(self.val_loss)
+        n_push     = len(push_eps)
+        test_acc   = self.d["final_test_acc"] or "N/A"
+        early_ep   = self.d["early_stop_ep"]  or "N/A"
+        best_ep    = self.d["best_ep"]         or "N/A"
+
+        kpis = [
+            ("Best Val Acc",      f"{best_val:.4f}"),
+            ("Min Val Loss",      f"{min_loss:.4f}"),
+            ("Test Accuracy",     f"{test_acc:.4f}" if isinstance(test_acc, float) else test_acc),
+            ("Best Epoch (P2)",   str(best_ep)),
+            ("Early Stop Epoch",  str(early_ep)),
+            ("Total P2 Epochs",   str(len(self.eps))),
+            ("Proto Pushes",      str(n_push)),
+            ("Phase 1 Warmup",    str(len(self.d["phase1_times"])) + " eps"),
+            ("Phase 4 FC Tune",   str(len(self.d["phase4_times"])) + " eps"),
+        ]
+
+        ax_kpi.set_title("Key Metrics", fontsize=11, fontweight="bold",
+                         color=T["text"], pad=8)
+        y0 = 0.92
+        for label, val in kpis:
+            ax_kpi.text(0.05, y0, label + ":", fontsize=9.5, color=T["subtext"],
+                        transform=ax_kpi.transAxes, va="top")
+            ax_kpi.text(0.65, y0, val, fontsize=9.5, color=T["best"],
+                        fontweight="bold", transform=ax_kpi.transAxes, va="top")
+            y0 -= 0.10
+
+        self._save(fig, "00_dashboard.png")
+
+    # =========================================================================
+    # Master runner
+    # =========================================================================
+    def run_all(self):
+        log.info("Generating all training graphs …")
+        self.plot_dashboard()
+        self.plot_accuracy()
+        self.plot_val_loss()
+        self.plot_combo()
+        self.plot_generalization_gap()
+        self.plot_loss_stability()
+        self.plot_prototype_push_impact()
+        self.plot_training_timeline()
+        log.info(f"All graphs saved to → {self.save_dir}")
+
+        # ── Save parsed data as JSON (handy for LaTeX tables) ──
+        out = self.save_dir / "parsed_training_data.json"
+        with open(out, "w") as f:
+            json.dump(self.d, f, indent=2)
+        log.info(f"Parsed data → {out}")
+
+
+# =============================================================================
+# EXECUTION
+# =============================================================================
+if __name__ == "__main__":
+    parser = LogParser(CONFIG["LOG_PATH"])
+    data   = parser.parse()
+    graphs = TrainingGraphs(data, CONFIG["SAVE_DIR"])
+    graphs.run_all()

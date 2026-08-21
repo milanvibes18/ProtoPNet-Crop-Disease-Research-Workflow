@@ -1,0 +1,44 @@
+                                       precision    recall  f1-score   support
+
+                    Apple_scab(Apple)     1.0000    1.0000    1.0000       150
+                Bacterial_spot(Peach)     1.0000    1.0000    1.0000       150
+               Bacterial_spot(Pepper)     1.0000    1.0000    1.0000       150
+               Bacterial_spot(Tomato)     0.9868    1.0000    0.9934       150
+                     Black_rot(Apple)     1.0000    1.0000    1.0000       150
+                     Black_rot(Grape)     1.0000    1.0000    1.0000       150
+              Cedar_apple_rust(Apple)     1.0000    1.0000    1.0000       150
+           Cercospora_leaf_spot(Corn)     0.9930    0.9467    0.9693       150
+                    Common_rust(Corn)     1.0000    1.0000    1.0000       150
+                 Early_blight(Potato)     1.0000    1.0000    1.0000       150
+                 Early_blight(Tomato)     1.0000    0.9667    0.9831       150
+                          Esca(Grape)     1.0000    1.0000    1.0000       150
+                Haunglongbing(Orange)     1.0000    1.0000    1.0000       150
+                  Late_blight(Potato)     1.0000    1.0000    1.0000       150
+                  Late_blight(Tomato)     0.9615    1.0000    0.9804       150
+                    Leaf_Mold(Tomato)     1.0000    0.9933    0.9967       150
+                   Leaf_blight(Grape)     1.0000    1.0000    1.0000       150
+              Leaf_scorch(Strawberry)     1.0000    1.0000    1.0000       150
+           Northern_Leaf_Blight(Corn)     0.9490    0.9933    0.9707       150
+               Powdery_mildew(Cherry)     1.0000    1.0000    1.0000       150
+           Septoria_leaf_spot(Tomato)     1.0000    0.9933    0.9967       150
+                 Spider_mites(Tomato)     0.9934    1.0000    0.9967       150
+                  Target_Spot(Tomato)     0.9933    0.9933    0.9933       150
+Tomato_Yellow_Leaf_Curl_Virus(Tomato)     1.0000    0.9867    0.9933       150
+          Tomato_mosaic_virus(Tomato)     0.9934    1.0000    0.9967       150
+                       healthy(Apple)     1.0000    1.0000    1.0000       150
+                   healthy(Blueberry)     1.0000    1.0000    1.0000       150
+                      healthy(Cherry)     1.0000    1.0000    1.0000       150
+                        healthy(Corn)     1.0000    1.0000    1.0000       150
+                       healthy(Grape)     1.0000    1.0000    1.0000       150
+                      healthy(Orange)     1.0000    1.0000    1.0000       150
+                       healthy(Peach)     1.0000    1.0000    1.0000       150
+                      healthy(Pepper)     1.0000    1.0000    1.0000       150
+                      healthy(Potato)     1.0000    1.0000    1.0000       150
+                   healthy(Raspberry)     1.0000    1.0000    1.0000       150
+                     healthy(Soybean)     1.0000    1.0000    1.0000       150
+                  healthy(Strawberry)     1.0000    1.0000    1.0000       150
+                      healthy(Tomato)     1.0000    0.9933    0.9967       150
+
+                             accuracy                         0.9965      5700
+                            macro avg     0.9966    0.9965    0.9965      5700
+                         weighted avg     0.9966    0.9965    0.9965      5700

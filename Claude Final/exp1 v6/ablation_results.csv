@@ -1,0 +1,2 @@
+variant,seed,backbone,use_se,use_srm,similarity,phase4,use_mixup,n_params_M,best_val,test_acc,gen_gap,delta_vs_full,runtime_h
+"V6: Full model, no Phase 4",42,convnext_tiny,True,True,cosine,False,True,28.15,99.75,99.79,-0.197,0.14,7.99

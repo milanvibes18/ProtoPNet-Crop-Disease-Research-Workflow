@@ -1,0 +1,2 @@
+filename,test_acc,config
+V0_ResNet-50_L2_(ProtoPNet_baseline)_s42.pth,99.53,"{'backbone': 'resnet50', 'use_se': False, 'use_srm': False, 'similarity': 'l2'}"

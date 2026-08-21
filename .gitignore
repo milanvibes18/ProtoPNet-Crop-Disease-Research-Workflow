@@ -8,3 +8,17 @@ Dataset/
 *.pt
 *.pth
 saves/
+# Large experiment archives
+Claude2/ex1 4.zip
+Claude2/exp1 2.zip
+Claude2/exp1 8.zip
+Claude2/exp2 part3.zip
+Claude2/exp2 part4.zip
+Claude2/exp1 0,1.zip
+Claude2/exp1 3.zip
+Claude2/exp1 5.zip
+Claude2/exp1 7.zip
+Claude2/exp1 v6.zip
+
+# Large generated result archive
+OUTPUT1/results/results.zip

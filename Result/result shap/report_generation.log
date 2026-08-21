@@ -1,0 +1,15 @@
+19:56:09  INFO      Device: cuda
+19:56:15  INFO      ============================================================
+  POWER-ProtoPNet  XAI Report
+============================================================
+19:56:15  INFO      ── Generating Classification Report ──
+19:56:15  INFO      Running inference on test set …
+19:57:13  INFO      ── Generating Confusion Matrix ──
+19:57:15  INFO      ── Generating ROC / AUC Curves ──
+19:57:17  INFO      ── Generating XAI Comparison Panels ──
+19:57:17  INFO      Building SHAP GradientExplainer background …
+20:24:58  INFO      ── Generating SHAP Summary (Global) ──
+20:24:58  INFO      Building SHAP GradientExplainer background …
+00:46:27  INFO      ============================================================
+  All reports saved to: /kaggle/working/reports
+============================================================

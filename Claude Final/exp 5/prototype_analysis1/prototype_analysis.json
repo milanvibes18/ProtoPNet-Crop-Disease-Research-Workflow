@@ -1,0 +1,29 @@
+{
+  "mean_source_match_sim": 0.9991224408149719,
+  "purity": {
+    "mean_purity": 0.954943205180921,
+    "median_purity": 1.0,
+    "n_low_purity_lt30pct": 2,
+    "n_high_purity_gt70pct": 178,
+    "worst_classes": [
+      "Cedar_apple_rust(Apple)",
+      "healthy(Peach)",
+      "healthy(Pepper)",
+      "healthy(Tomato)",
+      "Cercospora_leaf_spot(Corn)"
+    ]
+  },
+  "diversity": {
+    "mean_intra_class_distance": 0.12083600461483002,
+    "std_intra_class_distance": 0.3094682991504669,
+    "mean_inter_class_distance": 1.003930926322937,
+    "std_inter_class_distance": 0.07614575326442719,
+    "separation_ratio": 8.308210372924805
+  },
+  "fc_sparsity": {
+    "overall_sparsity_pct": 0.0,
+    "mean_own_class_weight": 1.021,
+    "mean_other_class_weight": -0.485,
+    "own_other_ratio": 2.11
+  }
+}

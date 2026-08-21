@@ -1,0 +1,65 @@
+16:01:25  INFO      ── Phase 1: Warmup ──
+16:09:25  INFO      Ep 1 Warmup Complete
+16:17:33  INFO      Ep 2 Warmup Complete
+16:25:41  INFO      Ep 3 Warmup Complete
+16:33:49  INFO      Ep 4 Warmup Complete
+16:41:57  INFO      Ep 5 Warmup Complete
+16:50:06  INFO      Ep 6 Warmup Complete
+16:58:14  INFO      Ep 7 Warmup Complete
+17:06:22  INFO      Ep 8 Warmup Complete
+17:14:30  INFO      Ep 9 Warmup Complete
+17:22:38  INFO      Ep 10 Warmup Complete
+17:22:38  INFO      ── Phase 2: Joint Training (ConvNeXt + SRM) ──
+17:31:37  INFO      Ep 001 | Train Acc: 0.9479 | Val Acc: 0.9839 | Val Loss: 0.8157
+17:40:34  INFO      Updating Prototypes (Patch Matching)...
+17:42:56  INFO      Ep 002 | Train Acc: 0.9849 | Val Acc: 0.9905 | Val Loss: 0.7759
+17:51:53  INFO      Ep 003 | Train Acc: 0.9899 | Val Acc: 0.9925 | Val Loss: 0.7708
+18:00:49  INFO      Updating Prototypes (Patch Matching)...
+18:03:40  INFO      Ep 004 | Train Acc: 0.9940 | Val Acc: 0.9907 | Val Loss: 0.7772
+18:12:34  INFO      Ep 005 | Train Acc: 0.9946 | Val Acc: 0.9956 | Val Loss: 0.7657
+18:21:30  INFO      Updating Prototypes (Patch Matching)...
+18:23:52  INFO      Ep 006 | Train Acc: 0.9958 | Val Acc: 0.9944 | Val Loss: 0.7676
+18:32:48  INFO      Ep 007 | Train Acc: 0.9974 | Val Acc: 0.9940 | Val Loss: 0.7649
+18:41:43  INFO      Updating Prototypes (Patch Matching)...
+18:44:05  INFO      Ep 008 | Train Acc: 0.9970 | Val Acc: 0.9956 | Val Loss: 0.7630
+18:53:01  INFO      Ep 009 | Train Acc: 0.9974 | Val Acc: 0.9960 | Val Loss: 0.7610
+19:01:58  INFO      Updating Prototypes (Patch Matching)...
+19:04:20  INFO      Ep 010 | Train Acc: 0.9983 | Val Acc: 0.9942 | Val Loss: 0.7637
+19:13:16  INFO      Ep 011 | Train Acc: 0.9981 | Val Acc: 0.9939 | Val Loss: 0.7669
+19:22:12  INFO      Updating Prototypes (Patch Matching)...
+19:24:35  INFO      Ep 012 | Train Acc: 0.9983 | Val Acc: 0.9956 | Val Loss: 0.7625
+19:33:31  INFO      Ep 013 | Train Acc: 0.9982 | Val Acc: 0.9951 | Val Loss: 0.7621
+19:42:26  INFO      Updating Prototypes (Patch Matching)...
+19:44:48  INFO      Ep 014 | Train Acc: 0.9986 | Val Acc: 0.9956 | Val Loss: 0.7585
+19:53:44  INFO      Ep 015 | Train Acc: 0.9985 | Val Acc: 0.9967 | Val Loss: 0.7563
+20:02:41  INFO      Updating Prototypes (Patch Matching)...
+20:05:03  INFO      Ep 016 | Train Acc: 0.9985 | Val Acc: 0.9954 | Val Loss: 0.7582
+20:13:59  INFO      Ep 017 | Train Acc: 0.9989 | Val Acc: 0.9954 | Val Loss: 0.7596
+20:22:54  INFO      Updating Prototypes (Patch Matching)...
+20:25:17  INFO      Ep 018 | Train Acc: 0.9992 | Val Acc: 0.9947 | Val Loss: 0.7574
+20:34:13  INFO      Ep 019 | Train Acc: 0.9993 | Val Acc: 0.9956 | Val Loss: 0.7589
+20:43:09  INFO      Updating Prototypes (Patch Matching)...
+20:45:31  INFO      Ep 020 | Train Acc: 0.9992 | Val Acc: 0.9947 | Val Loss: 0.7625
+20:54:27  INFO      Ep 021 | Train Acc: 0.9991 | Val Acc: 0.9953 | Val Loss: 0.7576
+21:03:23  INFO      Updating Prototypes (Patch Matching)...
+21:05:45  INFO      Ep 022 | Train Acc: 0.9993 | Val Acc: 0.9958 | Val Loss: 0.7557
+21:14:41  INFO      Ep 023 | Train Acc: 0.9991 | Val Acc: 0.9961 | Val Loss: 0.7544
+21:23:37  INFO      Updating Prototypes (Patch Matching)...
+21:25:59  INFO      Ep 024 | Train Acc: 0.9992 | Val Acc: 0.9960 | Val Loss: 0.7534
+21:34:56  INFO      Ep 025 | Train Acc: 0.9994 | Val Acc: 0.9961 | Val Loss: 0.7542
+21:43:52  INFO      Updating Prototypes (Patch Matching)...
+21:46:14  INFO      Ep 026 | Train Acc: 0.9997 | Val Acc: 0.9954 | Val Loss: 0.7544
+21:55:10  INFO      Ep 027 | Train Acc: 0.9994 | Val Acc: 0.9956 | Val Loss: 0.7551
+21:55:10  INFO      Early Stopping Triggered
+21:55:10  INFO      ── Phase 4: FC Sparsity Fine-tune ──
+21:57:26  INFO      Ep 1 FC Tuning Complete
+21:59:41  INFO      Ep 2 FC Tuning Complete
+22:01:56  INFO      Ep 3 FC Tuning Complete
+22:04:11  INFO      Ep 4 FC Tuning Complete
+22:06:26  INFO      Ep 5 FC Tuning Complete
+22:08:41  INFO      Ep 6 FC Tuning Complete
+22:10:57  INFO      Ep 7 FC Tuning Complete
+22:13:12  INFO      Ep 8 FC Tuning Complete
+22:15:27  INFO      Ep 9 FC Tuning Complete
+22:17:42  INFO      Ep 10 FC Tuning Complete
+22:18:14  INFO      FINAL TEST ACCURACY: 0.9970
